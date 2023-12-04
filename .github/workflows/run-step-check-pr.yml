@@ -1,0 +1,79 @@
+name: Checks Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_HOST: ${{ secrets.NEXUS_HOST }}
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Configurar ambiente
+      uses: actions/setup-java@v3.13.0
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: Copiar settings-conatus-repository.xml
+      run: |
+        envsubst < devops/settings-conatus-repository.xml > $HOME/.m2/settings.xml
+        export MAVEN_HOME=$HOME/.m2/settings.xml
+
+    - name: Obter versão da tag
+      id: obter-versao-tag
+      run: |
+        VERSION=$(grep 'conatus.versao' "./src/main/resources/application.properties" | cut -d'=' -f2)
+        echo "Versão da tag: $VERSION"
+        echo "::set-output name=VERSION::$VERSION"
+
+    - name: Verificar existência da tag
+      uses: mukunku/tag-exists-action@v1.4.0
+      id: checkTag
+      with:
+        tag: ${{ steps.obter-versao-tag.outputs.VERSION }}
+
+    - name: Comentar Falha no PR
+      uses: actions/github-script@v6
+      if: steps.checkTag.outputs.exists == 'true'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ A versão já foi utilizada. Por favor, atualize a versão no arquivo application.properties'
+            })
+
+    - name: Cancelar execução caso a tag já exista
+      if: steps.checkTag.outputs.exists == 'true'
+      run: |
+        exit 1
+
+    - name: Executar Testes
+      run: |
+        # Executar testes unitários do Spring.
+        mvn test -Dspring.profiles.active=test
+
+    - name: Comentar no PR
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 O Pull Request passou nos testes unitários automatizados!'
+            })
