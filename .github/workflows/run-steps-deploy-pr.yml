@@ -1,0 +1,90 @@
+name: Gerar tag e realizar deploy
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_HOST: ${{ secrets.NEXUS_HOST }}
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Configurar ambiente
+      uses: actions/setup-java@v3.13.0
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+        cache: maven
+
+    - name: copiar settings-conatus-repository.xml
+      run: |
+        envsubst < devops/settings-conatus-repository.xml > $HOME/.m2/settings.xml
+        export MAVEN_HOME=$HOME/.m2/settings.xml
+
+    - name: Configurar gcloud
+      uses: google-github-actions/setup-gcloud@v0.3.0
+      with:
+        project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+        export_default_credentials: true
+
+    - name: Gerar Tag e Fazer Deploy
+      if: github.event.pull_request.merged == true
+      run: |
+        # Obtém a versão do application.properties
+        VERSION=$(grep 'conatus.versao' "./src/main/resources/application.properties" | cut -d'=' -f2)
+
+        # Gerar uma tag com a versão do application.properties
+        git tag $VERSION
+        git push origin $VERSION
+
+        # Obtém o artifactId do projeto Maven
+        ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+
+        # Configurar o nome do arquivo JAR com base no artifactId e versão
+        JAR_NAME="$ARTIFACT_ID-$VERSION.jar"
+
+        # Realiza o build do projeto e especifica o nome do arquivo JAR
+        mvn clean install -DskipTests -Dmaven.finalName=$JAR_NAME
+
+        # Atualiza o arquivo POM com a versão correta antes do deploy
+        mvn versions:set -DnewVersion=$VERSION
+
+        # Realiza o deploy no Nexus usando o perfil nexus e especifica o nome do arquivo JAR
+        mvn deploy -DskipTests -Pnexus -Dfile=target/$JAR_NAME -DpomFile=pom.xml -DaltDeploymentRepository=nexus::default::http://${NEXUS_HOST}/repository/mvn-conatus-sa/
+
+        # Baixa o JAR do Nexus
+        wget --http-user=${NEXUS_USERNAME} --http-password=${NEXUS_PASSWORD} -O "${JAR_NAME}" "http://${NEXUS_HOST}/repository/mvn-conatus-sa//br/com/app/conatus/conatus-administrativo-service/${VERSION}/${JAR_NAME}"
+
+        # Criar diretorio no GCE
+        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo mkdir -p /etc/dev/conatus" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
+
+        # Envia o JAR para o GCE
+        gcloud compute scp $JAR_NAME ${{ secrets.INSTANCE_NAME }}:/etc/dev/conatus --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
+
+        # Finaliza o JAR do servidor GCP que esta em execucao
+        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo lsof -t -i:8080 | xargs -r sudo kill" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
+
+        # Executa o JAR no GCE
+        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo nohup java -jar /etc/dev/conatus/$JAR_NAME > log.log 2>&1 &" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
+
+    - name: Comentar no PR
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 O Pull Request foi implantado com sucesso no ambiente'
+            })

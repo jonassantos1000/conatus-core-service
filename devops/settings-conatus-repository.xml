@@ -1,0 +1,50 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <localRepository>${user.home}/.m2</localRepository>
+
+    <servers>
+        <!-- Configuração do servidor Nexus -->
+        <server>
+            <id>nexus</id>
+            <username>${env.NEXUS_USERNAME}</username>
+            <password>${env.NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+
+    <mirrors>
+        <mirror>
+            <id>nexus-central</id>
+            <mirrorOf>central</mirrorOf>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </mirror>
+        <mirror>
+            <id>maven-default-http-blocker</id>
+            <mirrorOf>espelho-ficticio</mirrorOf>
+            <name>Sobreescreve bloqueio padrao do http realizado pelo amven</name>
+            <url>http://0.0.0.0/</url>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <repositories>
+                <!-- Repositório Nexus -->
+                <repository>
+                    <id>nexus</id>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                    <url>http://${env.NEXUS_HOST}/repository/mvn-conatus-sa/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <!-- Ativar o perfil Nexus -->
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
+</settings>
