@@ -63,7 +63,7 @@ jobs:
         mvn deploy -DskipTests -Pnexus -Dfile=target/$JAR_NAME -DpomFile=pom.xml -DaltDeploymentRepository=nexus::default::http://${NEXUS_HOST}/repository/mvn-conatus-sa/
 
         # Baixa o JAR do Nexus
-        wget --http-user=${NEXUS_USERNAME} --http-password=${NEXUS_PASSWORD} -O "${JAR_NAME}" "http://${NEXUS_HOST}/repository/mvn-conatus-sa//br/com/app/conatus/conatus-administrativo-service/${VERSION}/${JAR_NAME}"
+        wget --http-user=${NEXUS_USERNAME} --http-password=${NEXUS_PASSWORD} -O "${JAR_NAME}" "http://${NEXUS_HOST}/repository/mvn-conatus-sa//br/com/app/conatus/conatus-core-service/${VERSION}/${JAR_NAME}"
 
         # Criar diretorio no GCE
         gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo mkdir -p /etc/dev/conatus" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
