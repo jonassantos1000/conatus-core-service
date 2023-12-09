@@ -72,7 +72,7 @@ jobs:
         gcloud compute scp $JAR_NAME ${{ secrets.INSTANCE_NAME }}:/etc/dev/conatus --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
 
         # Finaliza o JAR do servidor GCP que esta em execucao
-        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo lsof -t -i:8080 | xargs -r sudo kill" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
+        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo lsof -t -i:8090 | xargs -r sudo kill" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
 
         # Executa o JAR no GCE
         gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo nohup java -jar /etc/dev/conatus/$JAR_NAME > log.log 2>&1 &" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
