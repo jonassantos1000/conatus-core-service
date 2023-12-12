@@ -1,5 +1,7 @@
 package br.com.app.conatus.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.app.conatus.commons.entities.FornecedorEntity;
@@ -40,6 +42,10 @@ public class FornecedorService {
 		
 		return fornecedorRepository.findById(id)
 				.orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado um fornecedor com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
+	}
+
+	public Page<FornecedorResponse> recuperarFornecedores(Pageable page) {
+		return fornecedorRepository.findAll(page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
 	}
 	
 }
