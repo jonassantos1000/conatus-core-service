@@ -1,5 +1,9 @@
 package br.com.app.conatus.services;
 
+import static br.com.app.conatus.commons.constantes.Constante.ZONE_SP;
+
+import java.time.ZonedDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +25,7 @@ public class FornecedorService {
 	private final FornecedorRepository fornecedorRepository;
 	private final UsuarioService usuarioService;
 	
-	public void salvarRepository(FornecedorRequest dadosFornecedor) {
+	public void salvarFornecedor(FornecedorRequest dadosFornecedor) {
 		
 		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
 		
@@ -31,21 +35,32 @@ public class FornecedorService {
 				.usuarioAtualizacao(usuario)
 				.build());
 	}
+	
+	public void alterarFornecedor(Long idFornecedor, FornecedorRequest dadosFornecedor) {
+		
+		FornecedorEntity fornecedor = recuperarFornecedorPorId(idFornecedor);
+		
+		fornecedor.setNome(dadosFornecedor.nome());
+		fornecedor.setDataAtualizacao(ZonedDateTime.now(ZONE_SP));
+		
+		fornecedorRepository.save(fornecedor);
+		
+	}
 
-	public FornecedorResponse recuperarPorId(Long id) {
+	public FornecedorResponse buscarFornecedorPorId(Long id) {
 		
 		return FornecedorRecordFactory
-				.converterParaFornecedorResponse(buscarFornecedorPorId(id));		
+				.converterParaFornecedorResponse(recuperarFornecedorPorId(id));		
 	}
 	
-	private FornecedorEntity buscarFornecedorPorId(Long id) {
+	public Page<FornecedorResponse> recuperarFornecedores(Pageable page) {
+		return fornecedorRepository.findAll(page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
+	}
+	
+	private FornecedorEntity recuperarFornecedorPorId(Long id) {
 		
 		return fornecedorRepository.findById(id)
 				.orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado um fornecedor com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
 	}
 
-	public Page<FornecedorResponse> recuperarFornecedores(Pageable page) {
-		return fornecedorRepository.findAll(page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
-	}
-	
 }
