@@ -40,8 +40,11 @@ public class FornecedorService {
 		
 		FornecedorEntity fornecedor = recuperarFornecedorPorId(idFornecedor);
 		
+		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
+		
 		fornecedor.setNome(dadosFornecedor.nome());
 		fornecedor.setDataAtualizacao(ZonedDateTime.now(ZONE_SP));
+		fornecedor.setUsuarioAtualizacao(usuario);
 		
 		fornecedorRepository.save(fornecedor);
 		
