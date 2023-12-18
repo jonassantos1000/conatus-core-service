@@ -10,8 +10,11 @@ import br.com.app.conatus.commons.entities.CategoriaEntity;
 import br.com.app.conatus.commons.entities.UsuarioEntity;
 import br.com.app.conatus.commons.exceptions.NaoEncontradoException;
 import br.com.app.conatus.infra.CurrentTenantIdentifierResolverImpl;
+import br.com.app.conatus.model.factory.CategoriaRecordFactory;
 import br.com.app.conatus.model.request.CategoriaRequest;
+import br.com.app.conatus.model.response.CategoriaResponse;
 import br.com.app.conatus.repositories.CategoriaRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +25,7 @@ public class CategoriaService {
 	private final CategoriaRepository categoriaRepository;
 	private final UsuarioService usuarioService;
 	
+	@Transactional
 	public void salvarCategoria(CategoriaRequest dadosCategoria) {
 		
 		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
@@ -33,6 +37,7 @@ public class CategoriaService {
 				.build());
 	}
 
+	@Transactional
 	public void alterarCategoria(Long id, @Valid CategoriaRequest dadosCategoria) {
 		CategoriaEntity entity = recuperarCategoriaPorId(id);
 		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
@@ -43,6 +48,10 @@ public class CategoriaService {
 		
 		categoriaRepository.save(entity);
 		
+	}
+	
+	public CategoriaResponse pesquisarCategoriaPorId(Long id) {
+		return CategoriaRecordFactory.converterParaCategoriaResponse(recuperarCategoriaPorId(id));
 	}
 	
 	private CategoriaEntity recuperarCategoriaPorId(Long id) {

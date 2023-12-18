@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.com.app.conatus.model.request.CategoriaRequest;
+import br.com.app.conatus.model.response.FornecedorResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
@@ -97,6 +98,36 @@ class CategoriaControllerTest extends AbstractControllerTest {
 				new HttpEntity<>(gerarDadosCategoriaInvalido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.BAD_REQUEST, respostaRequisicao.getStatusCode());
+	}
+	
+	@Test
+	@Order(6)
+	void esperaQueRetorneSucessoNaPesquisaPeloIdCategoria() {
+		
+		path.append("/").append(ID_CATEGORIA_VALIDO);
+	
+		ParameterizedTypeReference<FornecedorResponse> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
+				new HttpEntity<>(getHeader()), responseType);
+
+		assertEquals(HttpStatus.OK, respostaRequisicao.getStatusCode());
+	}
+	
+	@Test
+	@Order(7)
+	void esperaQueRetorneErroNaPesquisaPorIdInvalidoFornecedor() {
+		
+		path.append("/").append(ID_CATEGORIA_INVALIDO);
+	
+		ParameterizedTypeReference<FornecedorResponse> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
+				new HttpEntity<>(getHeader()), responseType);
+
+		assertEquals(HttpStatus.NOT_FOUND, respostaRequisicao.getStatusCode());
 	}
 	
 	private CategoriaRequest gerarDadosCategoriaValido() {
