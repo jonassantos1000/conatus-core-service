@@ -15,7 +15,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.com.app.conatus.commons.model.response.RestPageResponse;
 import br.com.app.conatus.model.request.CategoriaRequest;
+import br.com.app.conatus.model.response.CategoriaResponse;
 import br.com.app.conatus.model.response.FornecedorResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -87,7 +89,7 @@ class CategoriaControllerTest extends AbstractControllerTest {
 	
 	@Test
 	@Order(5)
-	void esperaQueRetorneErroNaAlteracaoDoFornecedorComDadosInvalidos() {
+	void esperaQueRetorneErroNaAlteracaoDaCategoriaComDadosInvalidos() {
 		
 		path.append("/").append(ID_CATEGORIA_VALIDO);
 	
@@ -129,6 +131,20 @@ class CategoriaControllerTest extends AbstractControllerTest {
 
 		assertEquals(HttpStatus.NOT_FOUND, respostaRequisicao.getStatusCode());
 	}
+	
+	@Test
+	@Order(8)
+	void esperaQueRetorneSucessoNaPesquisaPorCategoriaPaginada() {
+		
+		ParameterizedTypeReference<RestPageResponse<CategoriaResponse>> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
+				new HttpEntity<>(getHeader()), responseType);
+
+		assertEquals(HttpStatus.OK, respostaRequisicao.getStatusCode());
+	}
+	
 	
 	private CategoriaRequest gerarDadosCategoriaValido() {
 		return CategoriaRequest.builder().descricao("Teste Unitario JUNIT").build();

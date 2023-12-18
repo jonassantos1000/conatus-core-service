@@ -1,5 +1,8 @@
 package br.com.app.conatus.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +43,11 @@ public class CategoriaController {
 	public CategoriaResponse buscarCategoriaPorId(@PathVariable Long id) {
 		return categoriaService.pesquisarCategoriaPorId(id);
 	}
+	
+	@GetMapping
+	public Page<CategoriaResponse> pesquisarFornecedores(@PageableDefault(size = 20) Pageable page) {
+		return categoriaService.recuperarCategorias(page);
+	}
+
 
 }
