@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.com.app.conatus.commons.model.response.RestPageResponse;
 import br.com.app.conatus.model.request.FornecedorRequest;
 import br.com.app.conatus.model.response.FornecedorResponse;
 
@@ -133,7 +134,7 @@ class FornecedorControllerTest extends AbstractControllerTest {
 	@Order(8)
 	void esperaQueRetorneSucessoNaPesquisaPorFornecedorPaginada() {
 		
-		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
+		ParameterizedTypeReference<RestPageResponse<FornecedorResponse>> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
