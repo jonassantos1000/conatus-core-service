@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>br.com.app.conatus</groupId>
 			<artifactId>conatus-commons</artifactId>
-			<version>1.1.1</version>
+			<version>1.1.2</version>
 		</dependency>
 		
 		<dependency>
