@@ -2,6 +2,7 @@ package br.com.app.conatus.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.conatus.model.request.CategoriaRequest;
+import br.com.app.conatus.model.response.CategoriaResponse;
 import br.com.app.conatus.services.CategoriaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,11 @@ public class CategoriaController {
 	@PutMapping("/{id}")
 	public void alterarCategoria(@PathVariable Long id, @RequestBody @Valid CategoriaRequest dadosCategoria) {
 		categoriaService.alterarCategoria(id, dadosCategoria);
+	}
+	
+	@GetMapping("/{id}")
+	public CategoriaResponse buscarCategoriaPorId(@PathVariable Long id) {
+		return categoriaService.pesquisarCategoriaPorId(id);
 	}
 
 }
