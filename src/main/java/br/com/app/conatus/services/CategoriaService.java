@@ -4,6 +4,8 @@ import static br.com.app.conatus.commons.constantes.Constante.ZONE_SP;
 
 import java.time.ZonedDateTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.app.conatus.commons.entities.CategoriaEntity;
@@ -54,8 +56,13 @@ public class CategoriaService {
 		return CategoriaRecordFactory.converterParaCategoriaResponse(recuperarCategoriaPorId(id));
 	}
 	
+	public Page<CategoriaResponse> recuperarCategorias(Pageable page) {
+		return categoriaRepository.findAll(page).map(CategoriaRecordFactory::converterParaCategoriaResponse);
+	}
+	
 	private CategoriaEntity recuperarCategoriaPorId(Long id) {
 		return categoriaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado uma categoria com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
 	}
-	
+
+
 }
