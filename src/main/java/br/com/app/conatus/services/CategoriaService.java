@@ -60,7 +60,7 @@ public class CategoriaService {
 		return categoriaRepository.findAll(page).map(CategoriaRecordFactory::converterParaCategoriaResponse);
 	}
 	
-	private CategoriaEntity recuperarCategoriaPorId(Long id) {
+	protected CategoriaEntity recuperarCategoriaPorId(Long id) {
 		return categoriaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado uma categoria com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
 	}
 
