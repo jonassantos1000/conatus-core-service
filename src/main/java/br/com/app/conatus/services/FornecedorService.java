@@ -60,7 +60,7 @@ public class FornecedorService {
 		return fornecedorRepository.findAll(page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
 	}
 	
-	private FornecedorEntity recuperarFornecedorPorId(Long id) {
+	protected FornecedorEntity recuperarFornecedorPorId(Long id) {
 		
 		return fornecedorRepository.findById(id)
 				.orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado um fornecedor com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
