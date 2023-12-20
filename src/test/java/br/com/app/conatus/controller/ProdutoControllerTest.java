@@ -104,6 +104,52 @@ class ProdutoControllerTest extends AbstractControllerTest {
 
 		assertEquals(HttpStatus.OK, respostaRequisicao.getStatusCode());
 	}
+	
+	@Test
+	@Order(6)
+	void esperaQueRetorneSucessoNaAlteracaoDoFornecedor() {
+		
+		path.append("/").append(ID_PRODUTO_VALIDO);
+	
+		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
+				new HttpEntity<>(gerarDadosProdutoValido(), getHeader()), responseType);
+
+		assertEquals(HttpStatus.OK, respostaRequisicao.getStatusCode());
+	}
+	
+	@Test
+	@Order(7)
+	void esperaQueRetorneErroNaAlteracaoDoFornecedorComIdInvalido() {
+		
+		path.append("/").append(ID_PRODUTO_INVALIDO);
+	
+		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
+				new HttpEntity<>(gerarDadosProdutoValido(), getHeader()), responseType);
+
+		assertEquals(HttpStatus.NOT_FOUND, respostaRequisicao.getStatusCode());
+	}
+	
+	@Test
+	@Order(8)
+	void esperaQueRetorneErroNaAlteracaoDoFornecedorComDadosInvalidos() {
+		
+		path.append("/").append(ID_PRODUTO_VALIDO);
+	
+		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
+		};
+
+		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
+				new HttpEntity<>(gerarDadosProdutoInvalido(), getHeader()), responseType);
+
+		assertEquals(HttpStatus.BAD_REQUEST, respostaRequisicao.getStatusCode());
+	}
+	
 		
 	
 	private ProdutoRequest gerarDadosProdutoValido() {
