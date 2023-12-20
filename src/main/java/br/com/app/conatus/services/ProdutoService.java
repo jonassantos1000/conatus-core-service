@@ -48,6 +48,35 @@ public class ProdutoService {
 		
 	}
 	
+	public void alterarProduto(Long id, ProdutoRequest dadosProduto) {
+		
+		UsuarioEntity solicitante = usuarioService.recuperarUsuarioPorId(1L);
+		
+		ProdutoEntity produto = recuperarProdutoPorId(id);
+		
+		atualizarProduto(produto, dadosProduto, solicitante);
+		
+		produtoRepository.save(produto);
+	}
+	
+	private void atualizarProduto(ProdutoEntity produto, ProdutoRequest dadosProduto, UsuarioEntity solicitante) {
+		
+		produto.setDescricao(dadosProduto.descricao());
+		produto.setValorUnitario(dadosProduto.valorUnitario());
+		produto.setUsuarioAtualizacao(solicitante);
+		
+		if (dadosProduto.idFornecedor() != null) {
+			produto.setFornecedor(buscarFornecedorPorId(dadosProduto.idFornecedor()));
+		}
+		
+		if (dadosProduto.idSituacao() != null) {
+			produto.setSituacao(dominioService.recuperarPorId(dadosProduto.idSituacao()));
+		}
+		
+		produtoCategoriaRepository.deleteAllInBatch(produto.getCategorias());
+		vincularCategorias(produto, dadosProduto.categorias(), solicitante);
+	}
+
 	public ProdutoResponse pesquisarProdutosPorId(Long id) {
 		
 		return ProdutoRecordFactory.converterParaCategoriaResponse(recuperarProdutoPorId(id));
@@ -80,6 +109,7 @@ public class ProdutoService {
 	private FornecedorEntity buscarFornecedorPorId(Long idFornecedor) {
 		return idFornecedor != null ? fornecedorService.recuperarFornecedorPorId(idFornecedor) : null;
 	}
+
 
 
 }

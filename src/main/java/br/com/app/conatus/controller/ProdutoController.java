@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -31,6 +32,11 @@ public class ProdutoController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void salvarProduto(@RequestBody @Valid ProdutoRequest dadosProduto) {
 		produtoService.salvarProduto(dadosProduto);
+	}
+	
+	@PutMapping("/{id}")
+	public void alterarProduto(@PathVariable Long id, @RequestBody @Valid ProdutoRequest dadosProduto) {
+		produtoService.alterarProduto(id, dadosProduto);
 	}
 	
 	@GetMapping("/{idProduto}")

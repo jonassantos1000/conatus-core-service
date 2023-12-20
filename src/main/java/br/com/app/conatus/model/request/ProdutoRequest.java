@@ -18,6 +18,8 @@ public record ProdutoRequest(
 		
 		Long idFornecedor,
 		
+		Long idSituacao,
+		
 		List<ProdutoCategoriaRequest> categorias
 		
 		) {
