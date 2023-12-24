@@ -44,7 +44,7 @@ public class FornecedorController {
 		return fornecedorService.buscarFornecedorPorId(id);
 	}
 	
-	@GetMapping("/nomes/{nome}")
+	@GetMapping("/nomes")
 	public Page<FornecedorResponse> pesquisarFornecedoresPorNome(FornecedorRequest dadosFornecedor, @PageableDefault(size = 20) Pageable page) {
 		return fornecedorService.recuperarFornecedoresPorNome(dadosFornecedor, page);
 	}
