@@ -64,6 +64,10 @@ public class FornecedorService {
 		});
 	}
 	
+	public Page<FornecedorResponse> recuperarFornecedoresPorNome(FornecedorRequest dadosFornecedor, Pageable page) {
+		return fornecedorRepository.findByNomeContainingIgnoreCase(dadosFornecedor.nome(), page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
+	}
+	
 	protected FornecedorEntity recuperarFornecedorPorId(Long id) {
 		
 		return fornecedorRepository.findById(id)

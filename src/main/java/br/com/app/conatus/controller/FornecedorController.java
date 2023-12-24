@@ -3,9 +3,7 @@ package br.com.app.conatus.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-
 import org.springframework.http.HttpStatus;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +42,11 @@ public class FornecedorController {
 	@GetMapping("/{id}")
 	public FornecedorResponse pesquisarFornecedorPorId(@PathVariable Long id) {
 		return fornecedorService.buscarFornecedorPorId(id);
+	}
+	
+	@GetMapping("/nomes/{nome}")
+	public Page<FornecedorResponse> pesquisarFornecedoresPorNome(FornecedorRequest dadosFornecedor, @PageableDefault(size = 20) Pageable page) {
+		return fornecedorService.recuperarFornecedoresPorNome(dadosFornecedor, page);
 	}
 	
 	@GetMapping
