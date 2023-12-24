@@ -8,6 +8,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FornecedorRecordFactory {
 	
+	public static FornecedorResponse converterParaFornecedorResponse(FornecedorEntity entity, boolean flagPossuiVinculos) {
+		return FornecedorResponse.builder()
+				.id(entity.getId())
+				.nome(entity.getNome())
+				.usuarioAtualizacao(entity.getUsuarioAtualizacao().getPessoa().getNome())
+				.flagPossuiVinculos(flagPossuiVinculos)
+				.dataAtualizacao(entity.getDataAtualizacao())
+				.build();
+	}
+
 	public static FornecedorResponse converterParaFornecedorResponse(FornecedorEntity entity) {
 		return FornecedorResponse.builder()
 				.id(entity.getId())

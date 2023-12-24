@@ -9,6 +9,7 @@ public record FornecedorResponse(
 		Long id,
 		String nome,
 		String usuarioAtualizacao,
+		boolean flagPossuiVinculos,
 		ZonedDateTime dataAtualizacao
 		) {
 
