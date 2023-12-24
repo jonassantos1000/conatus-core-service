@@ -9,6 +9,7 @@ public record CategoriaResponse(
 		Long id,
 		String descricao,
 		String usuarioAtualizacao,
+		boolean flagPossuiVinculos,
 		ZonedDateTime dataAtualizacao
 		) {
 

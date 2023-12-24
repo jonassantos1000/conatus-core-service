@@ -53,16 +53,23 @@ public class CategoriaService {
 	}
 	
 	public CategoriaResponse pesquisarCategoriaPorId(Long id) {
-		return CategoriaRecordFactory.converterParaCategoriaResponse(recuperarCategoriaPorId(id));
+		CategoriaEntity categoria = recuperarCategoriaPorId(id);
+		
+		return CategoriaRecordFactory.converterParaCategoriaResponse(categoria, isPossuiVinculos(categoria));
 	}
 	
 	public Page<CategoriaResponse> recuperarCategorias(Pageable page) {
-		return categoriaRepository.findAll(page).map(CategoriaRecordFactory::converterParaCategoriaResponse);
+		return categoriaRepository.findAll(page).map(categoria -> {
+			return CategoriaRecordFactory.converterParaCategoriaResponse(categoria, isPossuiVinculos(categoria));
+		});
 	}
 	
 	protected CategoriaEntity recuperarCategoriaPorId(Long id) {
 		return categoriaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado uma categoria com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
 	}
 
+	private boolean isPossuiVinculos(CategoriaEntity categoria) {
+		return !categoria.getProdutos().isEmpty();
+	}
 
 }

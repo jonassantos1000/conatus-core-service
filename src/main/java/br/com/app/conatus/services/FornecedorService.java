@@ -52,18 +52,26 @@ public class FornecedorService {
 
 	public FornecedorResponse buscarFornecedorPorId(Long id) {
 		
+		FornecedorEntity fornecedor = recuperarFornecedorPorId(id);
+		
 		return FornecedorRecordFactory
-				.converterParaFornecedorResponse(recuperarFornecedorPorId(id));		
+				.converterParaFornecedorResponse(fornecedor, isPossuiVinculos(fornecedor));		
 	}
 	
 	public Page<FornecedorResponse> recuperarFornecedores(Pageable page) {
-		return fornecedorRepository.findAll(page).map(FornecedorRecordFactory::converterParaFornecedorResponse);
+		return fornecedorRepository.findAll(page).map(fornecedor -> {
+			return FornecedorRecordFactory.converterParaFornecedorResponse(fornecedor, isPossuiVinculos(fornecedor));
+		});
 	}
 	
 	protected FornecedorEntity recuperarFornecedorPorId(Long id) {
 		
 		return fornecedorRepository.findById(id)
 				.orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado um fornecedor com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
+	}
+	
+	private boolean isPossuiVinculos(FornecedorEntity fornecedor) {
+		return !fornecedor.getProdutos().isEmpty();
 	}
 
 }

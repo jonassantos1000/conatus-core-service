@@ -13,6 +13,7 @@ public record ProdutoResponse(
 		BigDecimal valor,
 		FornecedorResponse fornecedor,
 		String situacao,
+		boolean flagPossuiVinculo,
 		List<ProdutoCategoriaResponse> categorias,
 		ZonedDateTime dataAtualizacao
 		) {

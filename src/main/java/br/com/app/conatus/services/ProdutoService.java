@@ -110,6 +110,4 @@ public class ProdutoService {
 		return idFornecedor != null ? fornecedorService.recuperarFornecedorPorId(idFornecedor) : null;
 	}
 
-
-
 }
