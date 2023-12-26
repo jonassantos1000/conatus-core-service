@@ -13,8 +13,11 @@ import br.com.app.conatus.commons.entities.UsuarioEntity;
 import br.com.app.conatus.commons.exceptions.NaoEncontradoException;
 import br.com.app.conatus.infra.CurrentTenantIdentifierResolverImpl;
 import br.com.app.conatus.model.factory.CategoriaRecordFactory;
+import br.com.app.conatus.model.factory.FornecedorRecordFactory;
 import br.com.app.conatus.model.request.CategoriaRequest;
+import br.com.app.conatus.model.request.FornecedorRequest;
 import br.com.app.conatus.model.response.CategoriaResponse;
+import br.com.app.conatus.model.response.FornecedorResponse;
 import br.com.app.conatus.repositories.CategoriaRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -68,6 +71,13 @@ public class CategoriaService {
 		return categoriaRepository.findById(id).orElseThrow(() -> new NaoEncontradoException("TENANT: %s - Não foi encontrado uma categoria com id: %d".formatted(CurrentTenantIdentifierResolverImpl.getCurrencyTenant(), id)));
 	}
 
+	public Page<CategoriaResponse> recuperarCategoriasPorDescricacao(CategoriaRequest dadosCategoria, Pageable page) {
+		return categoriaRepository.findByDescricaoContainingIgnoreCase(dadosCategoria.descricao(), page).map(categoria -> {
+			return CategoriaRecordFactory.converterParaCategoriaResponse(categoria, isPossuiVinculos(categoria));
+		});
+	}
+	
+	
 	private boolean isPossuiVinculos(CategoriaEntity categoria) {
 		return !categoria.getProdutos().isEmpty();
 	}
