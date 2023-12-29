@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.app.conatus.model.request.CategoriaRequest;
-import br.com.app.conatus.model.request.FornecedorRequest;
 import br.com.app.conatus.model.response.CategoriaResponse;
-import br.com.app.conatus.model.response.FornecedorResponse;
 import br.com.app.conatus.services.CategoriaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
