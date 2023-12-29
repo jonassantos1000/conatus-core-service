@@ -12,6 +12,7 @@ public class ProdutoRecordFactory {
 		return ProdutoResponse.builder()
 				.id(entity.getId())
 				.descricao(entity.getDescricao())
+				.valor(entity.getValorUnitario())
 				.fornecedor(FornecedorRecordFactory.converterParaFornecedorResponse(entity.getFornecedor()))
 				.situacao(entity.getSituacao().getDescricao())
 				.dataAtualizacao(entity.getDataAtualizacao())
