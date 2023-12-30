@@ -1,7 +1,10 @@
 package br.com.app.conatus.model.factory;
 
+import java.util.List;
+
 import br.com.app.conatus.commons.entities.EnderecoEntity;
 import br.com.app.conatus.model.response.EnderecoResponse;
+import br.com.app.conatus.model.response.ViaCepResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +23,21 @@ public class EnderecoRecordFactory {
 				.uf(entity.getUf())
 				.situacao(entity.getSituacao().getDescricao())
 				.build();
+	}
+
+	public static EnderecoResponse converterViaCepParaEnderecoResponse(ViaCepResponse viaCep) {
+		return EnderecoResponse.builder()
+				.logradouro(viaCep.logradouro())
+				.bairro(viaCep.bairro())
+				.cep(viaCep.cep())
+				.complemento(viaCep.complemento())
+				.municipio(viaCep.localidade())
+				.uf(viaCep.uf())
+				.build();
+	}
+	
+	public static List<EnderecoResponse> converterListaViaCepParaListaEnderecoResponse(List<ViaCepResponse> viaCep) {
+		return viaCep.stream().map(EnderecoRecordFactory::converterViaCepParaEnderecoResponse).toList();
 	}
 
 }
