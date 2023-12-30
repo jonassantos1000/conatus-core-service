@@ -15,6 +15,7 @@ public class ClienteRecordFactory {
 				.celular(entity.getCelular())
 				.cpf(entity.getCpf())
 				.email(entity.getEmail())
+				.observacao(entity.getObservacao())
 				.situacao(entity.getSituacao().getDescricao())
 				.tenant(entity.getTenant().getCodigoTenant())
 				.dataAtualizacao(entity.getDataAtualizacao())

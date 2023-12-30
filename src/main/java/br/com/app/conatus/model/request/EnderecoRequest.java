@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record EnderecoRequest(
 		
+		Long id,
+		
 		String logradouro,
 		
 		String numero,

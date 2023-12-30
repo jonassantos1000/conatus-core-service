@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClienteEntityFactory {
 	
-	public static ClienteEntity converterParaEnderecoEntity(ClienteRequest dadosCliente, DominioEntity situacao, UsuarioEntity usuario) {
+	public static ClienteEntity converterParaClienteEntity(ClienteRequest dadosCliente, DominioEntity situacao, UsuarioEntity usuario) {
 		
 		if (Objects.isNull(dadosCliente)) {
 			return null;
@@ -26,6 +26,7 @@ public class ClienteEntityFactory {
 				.nome(dadosCliente.nome())
 				.telefone(dadosCliente.telefone())
 				.celular(dadosCliente.celular())
+				.observacao(dadosCliente.observacao())
 				.situacao(situacao)
 				.usuarioAtualizacao(usuario)
 				.tenant(usuario.getTenantSelecionado())

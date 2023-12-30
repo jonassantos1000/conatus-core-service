@@ -14,6 +14,7 @@ public record ClienteResponse(
 		String telefone,
 		String situacao,
 		String tenant,
+		String observacao,
 		EnderecoResponse endereco,
 		ZonedDateTime dataAtualizacao
 		) {

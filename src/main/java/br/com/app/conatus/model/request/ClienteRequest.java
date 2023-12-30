@@ -18,7 +18,10 @@ public record ClienteRequest(
 		String email,
 		
 		String celular,
+		
 		String telefone,
+		
+		String observacao,
 		
 		@Valid
 		EnderecoRequest endereco
