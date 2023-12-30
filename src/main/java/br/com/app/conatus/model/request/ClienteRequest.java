@@ -5,7 +5,9 @@ import org.hibernate.validator.constraints.br.CPF;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 
+@Builder
 public record ClienteRequest(
 		
 		@NotBlank(message = "O nome é obrigatório")
@@ -18,7 +20,10 @@ public record ClienteRequest(
 		String email,
 		
 		String celular,
+		
 		String telefone,
+		
+		String observacao,
 		
 		@Valid
 		EnderecoRequest endereco

@@ -9,6 +9,7 @@ import br.com.app.conatus.commons.entities.UsuarioEntity;
 import br.com.app.conatus.commons.enums.CodigoDominio;
 import br.com.app.conatus.commons.exceptions.NaoEncontradoException;
 import br.com.app.conatus.entities.factory.ClienteEntityFactory;
+import br.com.app.conatus.entities.factory.EnderecoEntityFactory;
 import br.com.app.conatus.infra.CurrentTenantIdentifierResolverImpl;
 import br.com.app.conatus.model.factory.ClienteRecordFactory;
 import br.com.app.conatus.model.request.ClienteRequest;
@@ -31,9 +32,29 @@ public class ClienteService {
 
 		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
 
-		clienteRepository.save(ClienteEntityFactory.converterParaEnderecoEntity(dadosCliente,
+		clienteRepository.save(ClienteEntityFactory.converterParaClienteEntity(dadosCliente,
 				dominioService.recuperarPorCodigo(CodigoDominio.STATUS_ATIVO), usuario));
 	}
+	
+	@Transactional
+	public void alterarCliente(Long id, ClienteRequest dadosCliente) {
+		
+		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
+		ClienteEntity cliente = recuperarClientePorId(id);
+		
+		cliente.setNome(dadosCliente.nome());
+		cliente.setCelular(dadosCliente.celular());
+		cliente.setEmail(dadosCliente.email());
+		cliente.setTelefone(dadosCliente.telefone());
+		
+		if (dadosCliente.endereco().id() != null) {
+			cliente.setEndereco(EnderecoEntityFactory.converterParaEnderecoEntity(dadosCliente.endereco(), dominioService.recuperarPorCodigo(CodigoDominio.STATUS_ATIVO), usuario));
+		}
+		
+		clienteRepository.save(cliente);
+			
+	}
+	
 	
 	public ClienteResponse buscarClientePorId(Long idCliente) {
 
