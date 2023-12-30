@@ -16,7 +16,7 @@ public class ViaCepClient extends WebClientGenerico{
 
     public ViaCepResponse buscarEnderecoPorCep(String cep) {
     	
-    	String path = "/%s/json/".formatted(cep);
+    	String path = new StringBuilder().append(cep).append("/json/").toString();
     	
 		return super.get(URL_VIA_CEP.concat(path), ViaCepResponse.class);
 	}
