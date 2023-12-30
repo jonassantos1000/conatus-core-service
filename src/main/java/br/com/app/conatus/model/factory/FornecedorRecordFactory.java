@@ -1,5 +1,7 @@
 package br.com.app.conatus.model.factory;
 
+import java.util.Objects;
+
 import br.com.app.conatus.commons.entities.FornecedorEntity;
 import br.com.app.conatus.model.response.FornecedorResponse;
 import lombok.AccessLevel;
@@ -19,6 +21,10 @@ public class FornecedorRecordFactory {
 	}
 
 	public static FornecedorResponse converterParaFornecedorResponse(FornecedorEntity entity) {
+		if (Objects.isNull(entity)) {
+			return null;
+		}
+		
 		return FornecedorResponse.builder()
 				.id(entity.getId())
 				.nome(entity.getNome())
