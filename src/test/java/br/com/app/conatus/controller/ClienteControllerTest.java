@@ -2,9 +2,6 @@ package br.com.app.conatus.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -19,55 +16,54 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.com.app.conatus.commons.model.response.RestPageResponse;
-import br.com.app.conatus.model.request.ProdutoCategoriaRequest;
-import br.com.app.conatus.model.request.ProdutoRequest;
-import br.com.app.conatus.model.response.FornecedorResponse;
-import br.com.app.conatus.model.response.ProdutoResponse;
+import br.com.app.conatus.model.request.ClienteRequest;
+import br.com.app.conatus.model.request.EnderecoRequest;
+import br.com.app.conatus.model.response.ClienteResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @TestMethodOrder(OrderAnnotation.class)
 class ClienteControllerTest extends AbstractControllerTest {
 
-	private static final String RESOURCE = "/produtos";
+	private static final String RESOURCE = "/clientes";
 	private static StringBuilder path = new StringBuilder();
-	private static final Long ID_PRODUTO_VALIDO = 1L;
-	private static final Long ID_PRODUTO_INVALIDO = 0L;
+	private static final Long ID_CLIENTE_VALIDO = 1L;
+	private static final Long ID_CLIENTE_INVALIDO = 0L;
 	
 	
 	@Test
 	@Order(1)
-	void esperaQueSejaRetornadoSucessoNoCadastroDeProduto() {
+	void esperaQueSejaRetornadoSucessoNoCadastroDeCliente() {
 	
 		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.POST,
-				new HttpEntity<>(gerarDadosProdutoValido(), getHeader()), responseType);
+				new HttpEntity<>(gerarDadosClienteValido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.CREATED, respostaRequisicao.getStatusCode());
 	}
 	
 	@Test
 	@Order(2)
-	void esperaQueRetorneErroNoCadastroDeProdutoComParametrosInvalidos() {
+	void esperaQueRetorneErroNoCadastroDeClienteComParametrosInvalidos() {
 	
 		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.POST,
-				new HttpEntity<>(gerarDadosProdutoInvalido(), getHeader()), responseType);
+				new HttpEntity<>(gerarDadosClienteInvalido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.BAD_REQUEST, respostaRequisicao.getStatusCode());
 	}
 	
 	@Test
 	@Order(3)
-	void esperaQueRetorneSucessoNaPesquisaPeloIdProduto() {
+	void esperaQueRetorneSucessoNaPesquisaPeloIdCliente() {
 		
-		path.append("/").append(ID_PRODUTO_VALIDO);
+		path.append("/").append(ID_CLIENTE_VALIDO);
 	
-		ParameterizedTypeReference<FornecedorResponse> responseType = new ParameterizedTypeReference<>() {
+		ParameterizedTypeReference<ClienteResponse> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
@@ -79,11 +75,11 @@ class ClienteControllerTest extends AbstractControllerTest {
 	
 	@Test
 	@Order(4)
-	void esperaQueRetorneErroNaPesquisaPorIdInvalidoProduto() {
+	void esperaQueRetorneErroNaPesquisaPorIdInvalidoCliente() {
 		
-		path.append("/").append(ID_PRODUTO_INVALIDO);
+		path.append("/").append(ID_CLIENTE_INVALIDO);
 	
-		ParameterizedTypeReference<FornecedorResponse> responseType = new ParameterizedTypeReference<>() {
+		ParameterizedTypeReference<ClienteResponse> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
@@ -94,9 +90,9 @@ class ClienteControllerTest extends AbstractControllerTest {
 	
 	@Test
 	@Order(5)
-	void esperaQueRetorneSucessoNaPesquisaPorProdutoPaginado() {
+	void esperaQueRetorneSucessoNaPesquisaPorClientePaginado() {
 		
-		ParameterizedTypeReference<RestPageResponse<ProdutoResponse>> responseType = new ParameterizedTypeReference<>() {
+		ParameterizedTypeReference<RestPageResponse<ClienteResponse>> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.GET,
@@ -107,65 +103,68 @@ class ClienteControllerTest extends AbstractControllerTest {
 	
 	@Test
 	@Order(6)
-	void esperaQueRetorneSucessoNaAlteracaoDoFornecedor() {
+	void esperaQueRetorneSucessoNaAlteracaoDoCliente() {
 		
-		path.append("/").append(ID_PRODUTO_VALIDO);
+		path.append("/").append(ID_CLIENTE_VALIDO);
 	
 		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
-				new HttpEntity<>(gerarDadosProdutoValido(), getHeader()), responseType);
+				new HttpEntity<>(gerarDadosClienteValido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.OK, respostaRequisicao.getStatusCode());
 	}
 	
 	@Test
 	@Order(7)
-	void esperaQueRetorneErroNaAlteracaoDoFornecedorComIdInvalido() {
+	void esperaQueRetorneErroNaAlteracaoDoClienteComIdInvalido() {
 		
-		path.append("/").append(ID_PRODUTO_INVALIDO);
+		path.append("/").append(ID_CLIENTE_INVALIDO);
 	
 		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
-				new HttpEntity<>(gerarDadosProdutoValido(), getHeader()), responseType);
+				new HttpEntity<>(gerarDadosClienteValido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.NOT_FOUND, respostaRequisicao.getStatusCode());
 	}
 	
 	@Test
 	@Order(8)
-	void esperaQueRetorneErroNaAlteracaoDoFornecedorComDadosInvalidos() {
+	void esperaQueRetorneErroNaAlteracaoDoClienteComDadosInvalidos() {
 		
-		path.append("/").append(ID_PRODUTO_VALIDO);
+		path.append("/").append(ID_CLIENTE_VALIDO);
 	
 		ParameterizedTypeReference<Void> responseType = new ParameterizedTypeReference<>() {
 		};
 
 		var respostaRequisicao = restTemplate.exchange(path.toString(), HttpMethod.PUT,
-				new HttpEntity<>(gerarDadosProdutoInvalido(), getHeader()), responseType);
+				new HttpEntity<>(gerarDadosClienteInvalido(), getHeader()), responseType);
 
 		assertEquals(HttpStatus.BAD_REQUEST, respostaRequisicao.getStatusCode());
 	}
 	
 		
 	
-	private ProdutoRequest gerarDadosProdutoValido() {
-		return ProdutoRequest.builder()
-				.descricao("Teste Unitario JUNIT")
-				.idFornecedor(999L)
-				.valorUnitario(BigDecimal.TEN)
-				.categorias(
-						List.of(ProdutoCategoriaRequest.builder()
-								.idCategoria(999L).build()
-								))
+	private ClienteRequest gerarDadosClienteValido() {
+		return ClienteRequest.builder()
+				.nome("teste junit")
+				.cpf("34855661015")
+				.email("teste@teste.com")
+				.endereco(EnderecoRequest.builder()
+						.bairro("teste")
+						.cep("08025455")
+						.logradouro("teste")
+						.bairro("bairro teste")
+						.complemento("complemento teste")
+						.build())
 				.build();
 	}
 	
-	private ProdutoRequest gerarDadosProdutoInvalido() {
-		return ProdutoRequest.builder()
+	private ClienteRequest gerarDadosClienteInvalido() {
+		return ClienteRequest.builder()
 				.build();
 	}
 
