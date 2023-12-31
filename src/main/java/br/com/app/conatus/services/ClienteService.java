@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.app.conatus.commons.entities.ClienteEntity;
+import br.com.app.conatus.commons.entities.DominioEntity;
 import br.com.app.conatus.commons.entities.EnderecoEntity;
 import br.com.app.conatus.commons.entities.UsuarioEntity;
 import br.com.app.conatus.commons.enums.CodigoDominio;
@@ -29,6 +30,7 @@ public class ClienteService {
 
 	private final UsuarioService usuarioService;
 	private final DominioService dominioService;
+	
 	private final EnderecoRepository enderecoRepository;
 	
 	private final ClienteRepository clienteRepository;
@@ -37,11 +39,15 @@ public class ClienteService {
 	public void salvarCliente(ClienteRequest dadosCliente) {
 
 		UsuarioEntity usuario = usuarioService.recuperarUsuarioPorId(1L);
+		
+		DominioEntity situacaoAtivo = dominioService.recuperarPorCodigo(CodigoDominio.STATUS_ATIVO);
 
-		clienteRepository.save(ClienteEntityFactory.converterParaClienteEntity(dadosCliente,
-				dominioService.recuperarPorCodigo(CodigoDominio.STATUS_ATIVO), usuario));
+		EnderecoEntity endereco = recuperarEnderecoCliente(dadosCliente.endereco(), situacaoAtivo, usuario);
+		
+		clienteRepository.save(ClienteEntityFactory.converterParaClienteEntity(dadosCliente, endereco,
+				situacaoAtivo, usuario));
 	}
-	
+
 	@Transactional
 	public void alterarCliente(Long id, ClienteRequest dadosCliente) {
 		
@@ -95,5 +101,15 @@ public class ClienteService {
 
 			cliente.setEndereco(novoEndereco);
 		}
+	}
+	
+	private EnderecoEntity recuperarEnderecoCliente(EnderecoRequest enderecoRequest, DominioEntity situacao, UsuarioEntity usuario) {
+		Optional<EnderecoEntity> enderecoOptional = enderecoRepository.findByCepAndNumero(enderecoRequest.cep(), enderecoRequest.numero());
+		
+		EnderecoEntity endereco = enderecoOptional.isEmpty() ? 
+				enderecoRepository.save(EnderecoEntityFactory.converterParaEnderecoEntity(enderecoRequest, situacao, usuario)) : 
+				enderecoOptional.get();
+
+		return endereco;
 	}
 }
