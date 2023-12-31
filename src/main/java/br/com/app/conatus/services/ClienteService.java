@@ -1,5 +1,7 @@
 package br.com.app.conatus.services;
 
+import java.util.Objects;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class ClienteService {
 
 	private final UsuarioService usuarioService;
 	private final DominioService dominioService;
+	private final EnderecoService enderecoService;
 	
 	private final ClienteRepository clienteRepository;
 	
@@ -47,14 +50,15 @@ public class ClienteService {
 		cliente.setEmail(dadosCliente.email());
 		cliente.setTelefone(dadosCliente.telefone());
 		
-		if (dadosCliente.endereco().id() != null) {
+		if (Objects.isNull(dadosCliente.endereco().id())) {
 			cliente.setEndereco(EnderecoEntityFactory.converterParaEnderecoEntity(dadosCliente.endereco(), dominioService.recuperarPorCodigo(CodigoDominio.STATUS_ATIVO), usuario));
+		} else if (dadosCliente.endereco().id() != cliente.getEndereco().getId()) {
+			cliente.setEndereco(enderecoService.recuperarEnderecoPorId(dadosCliente.endereco().id()));
 		}
 		
 		clienteRepository.save(cliente);
 			
 	}
-	
 	
 	public ClienteResponse buscarClientePorId(Long idCliente) {
 
