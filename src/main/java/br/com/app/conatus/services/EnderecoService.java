@@ -3,6 +3,7 @@ package br.com.app.conatus.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.com.app.conatus.client.ViaCepClient;
@@ -31,7 +32,7 @@ public class EnderecoService {
 	
 	public EnderecoResponse recuperarEnderecoPorCep(String cep) {
 		
-		Optional<EnderecoEntity> cepDB = enderecoRepository.findByCep(cep);
+		Optional<EnderecoEntity> cepDB = enderecoRepository.findByCep(cep, PageRequest.of(0, 1));
 		
 		if(cepDB.isPresent()) {
 			return EnderecoRecordFactory.converterParaEnderecoResponse(cepDB.get());
@@ -67,11 +68,11 @@ public class EnderecoService {
 	private void salvarEndereco(List<ViaCepResponse> listaResponseViaCep) {
 		listaResponseViaCep.forEach(response -> {
 			
-			Optional<EnderecoEntity> enderecoOptional = enderecoRepository.findByCep(response.cep());
+			Optional<EnderecoEntity> enderecoOptional = enderecoRepository.findByCep(response.cep(), PageRequest.of(0, 1));
 			
 			if(enderecoOptional.isEmpty()) {
 				salvarEndereco(response);
-			}
+			} 
 			
 		});
 	}
