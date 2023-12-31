@@ -28,7 +28,7 @@ public class EnderecoController {
 	
 	@GetMapping("/filtros")
 	public List<EnderecoResponse> pesquisarEnderecoPorFiltro(@RequestParam String uf, @RequestParam String municipio, @RequestParam String logradouro) {
-		return enderecoService.recuperarEnderecoPorFiltro(uf, municipio, logradouro);
+		return enderecoService.recuperarEnderecoViaCepPorFiltro(uf, municipio, logradouro);
 	}
 
 }
