@@ -42,12 +42,8 @@ jobs:
         envsubst < devops/settings-conatus-repository.xml > $HOME/.m2/settings.xml
         export MAVEN_HOME=$HOME/.m2/settings.xml
 
-    - name: Configurar gcloud
-      uses: google-github-actions/setup-gcloud@v0.3.0
-      with:
-        project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-        service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-        export_default_credentials: true
+    - name: Configurar SSH
+      run: sudo apt-get install -y sshpass
 
     - name: Gerar Tag e Fazer Deploy
       if: github.event.pull_request.merged == true
