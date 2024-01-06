@@ -66,7 +66,7 @@ jobs:
         JAR_NAME="$ARTIFACT_ID-$VERSION.jar"
 
         # Realiza o build do projeto e especifica o nome do arquivo JAR
-        mvn clean install -DskipTests -Dmaven.finalName=$JAR_NAME
+        mvn clean compile install -U -DskipTests -Dmaven.finalName=$JAR_NAME
 
         # Atualiza o arquivo POM com a versão correta antes do deploy
         mvn versions:set -DnewVersion=$VERSION
@@ -74,20 +74,18 @@ jobs:
         # Realiza o deploy no Nexus usando o perfil nexus e especifica o nome do arquivo JAR
         mvn deploy -DskipTests -Pnexus -Dfile=target/$JAR_NAME -DpomFile=pom.xml -DaltDeploymentRepository=nexus::default::http://${NEXUS_HOST}/repository/mvn-conatus-sa/
 
-        # Baixa o JAR do Nexus
-        wget --http-user=${NEXUS_USERNAME} --http-password=${NEXUS_PASSWORD} -O "${JAR_NAME}" "http://${NEXUS_HOST}/repository/mvn-conatus-sa//br/com/app/conatus/conatus-core-service/${VERSION}/${JAR_NAME}"
+        # Copia o JAR  para o servidor
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} scp -P 4000 -o StrictHostKeyChecking=no ./target/$JAR_NAME ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}:${{ secrets.DEST_PATH }}
+    
+    - name: Finalizar Servico Em Execucao
+      run: |
+        # Executar comandos no servidor Windows usando appleboy/ssh-action
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -p 4000 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DEVOPS_PATH }} && finalizar-servico.bat 8090"
 
-        # Criar diretorio no GCE
-        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo mkdir -p /etc/dev/conatus" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
-
-        # Envia o JAR para o GCE
-        gcloud compute scp $JAR_NAME ${{ secrets.INSTANCE_NAME }}:/etc/dev/conatus --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }}
-
-        # Finaliza o JAR do servidor GCP que esta em execucao
-        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo lsof -t -i:8090 | xargs -r sudo kill" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
-
-        # Executa o JAR no GCE
-        gcloud compute ssh ${{ secrets.INSTANCE_NAME }} --command "sudo nohup java -jar /etc/dev/conatus/$JAR_NAME > log.log 2>&1 &" --strict-host-key-checking=no --quiet --zone=${{ secrets.ZONE }} --project=${{ secrets.GCLOUD_PROJECT_ID }} 
+    - name: Iniciar servico
+      run: |  
+        # Iniciar o JAR em segundo plano
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -p 4000 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "powershell Invoke-WmiMethod -Path 'Win32_Process' -Name Create -ArgumentList '${{ secrets.DEVOPS_PATH }}\\iniciar-servico.bat ${{ secrets.DEST_PATH }}\\$JAR_NAME -a -b bar'"
 
     - name: Informar fim do deploy no PR
       uses: actions/github-script@v6
