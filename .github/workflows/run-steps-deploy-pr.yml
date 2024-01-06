@@ -73,13 +73,9 @@ jobs:
         # Copia o JAR  para o servidor
         sshpass -p ${{ secrets.SERVER_PASSWORD }} scp -P 4000 -o StrictHostKeyChecking=no ./target/$JAR_NAME ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}:${{ secrets.DEST_PATH }}
     
-    - name: Finalizar Servico Em Execucao
-      run: |
         # Executar comandos no servidor Windows usando appleboy/ssh-action
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -p 4000 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DEVOPS_PATH }} && finalizar-servico.bat 8090"
-
-    - name: Iniciar servico
-      run: |  
+ 
         # Iniciar o JAR em segundo plano
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -p 4000 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "powershell Invoke-WmiMethod -Path 'Win32_Process' -Name Create -ArgumentList '${{ secrets.DEVOPS_PATH }}\\iniciar-servico.bat ${{ secrets.DEST_PATH }}\\$JAR_NAME -a -b bar'"
 
